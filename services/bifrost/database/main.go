@@ -22,6 +22,7 @@ func (s *Chain) Scan(src interface{}) error {
 const (
 	ChainBitcoin  Chain = "bitcoin"
 	ChainEthereum Chain = "ethereum"
+	ChainLitecoin Chain = "litecoin"
 )
 
 type Database interface {
