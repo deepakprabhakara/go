@@ -7,11 +7,14 @@ import (
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/ethereum/go-ethereum/core/types"
+	ltcChainCfg "github.com/ltcsuite/ltcd/chaincfg/chainhash"
+	ltcWire "github.com/ltcsuite/ltcd/wire"
 	"github.com/stellar/go/clients/horizon"
 	"github.com/stellar/go/support/log"
 )
 
 const satsInBtc = 100000000
+const litsInLtc = 100000000
 
 var (
 	ten      = big.NewInt(10)
@@ -35,6 +38,17 @@ type RandomBitcoinClient struct {
 type RandomEthereumClient struct {
 	currentBlockNumber  int64
 	blocks              map[int64]*types.Block
+	userAddresses       []string
+	userAddressesLock   sync.Mutex
+	firstBlockGenerated chan bool
+	log                 *log.Entry
+}
+
+// RandomLitecoinClient implements litecoin.Client and generates random litecoin transactions.
+type RandomLitecoinClient struct {
+	currentBlockNumber  int64
+	heightHash          map[int64]*ltcChainCfg.Hash
+	hashBlock           map[*ltcChainCfg.Hash]*ltcWire.MsgBlock
 	userAddresses       []string
 	userAddressesLock   sync.Mutex
 	firstBlockGenerated chan bool

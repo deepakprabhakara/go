@@ -5,6 +5,7 @@ type Config struct {
 	UsingProxy                     bool            `valid:"optional" toml:"using_proxy"`
 	Bitcoin                        *bitcoinConfig  `valid:"optional" toml:"bitcoin"`
 	Ethereum                       *ethereumConfig `valid:"optional" toml:"ethereum"`
+	Litecoin                       *litecoinConfig `valid:"optional" toml:"litecoin"`
 	AccessControlAllowOriginHeader string          `valid:"optional" toml:"access-control-allow-origin-header"`
 
 	Stellar struct {
@@ -24,7 +25,7 @@ type Config struct {
 		SignerSecretKey string `valid:"required" toml:"signer_secret_key"`
 		// StartingBalance is the starting amount of XLM for newly created accounts.
 		// Default value is 41. Increase it if you need Data records / other custom entities on new account.
-		StartingBalance  string `valid:"optional,numeric" toml:"starting_balance"`
+		StartingBalance string `valid:"optional,numeric" toml:"starting_balance"`
 	} `valid:"required" toml:"stellar"`
 	Database struct {
 		Type string `valid:"matches(^postgres$)"`
@@ -52,4 +53,16 @@ type ethereumConfig struct {
 	MinimumValueEth string `valid:"required" toml:"minimum_value_eth"`
 	// Host only
 	RpcServer string `valid:"required" toml:"rpc_server"`
+}
+
+type litecoinConfig struct {
+	MasterPublicKey string `valid:"required" toml:"master_public_key"`
+	// Minimum value of transaction accepted by Bifrost in BTC.
+	// Everything below will be ignored.
+	MinimumValueLtc string `valid:"required" toml:"minimum_value_ltc"`
+	// Host only
+	RpcServer string `valid:"required" toml:"rpc_server"`
+	RpcUser   string `valid:"optional" toml:"rpc_user"`
+	RpcPass   string `valid:"optional" toml:"rpc_pass"`
+	Testnet   bool   `valid:"optional" toml:"testnet"`
 }

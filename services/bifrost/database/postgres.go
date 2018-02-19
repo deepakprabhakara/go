@@ -19,6 +19,9 @@ const (
 	bitcoinAddressIndexKey = "bitcoin_address_index"
 	bitcoinLastBlockKey    = "bitcoin_last_block"
 
+	litecoinAddressIndexKey = "litecoin_address_index"
+	litecoinLastBlockKey    = "litecoin_last_block"
+
 	addressAssociationTableName   = "address_association"
 	broadcastedEventTableName     = "broadcasted_event"
 	keyValueStoreTableName        = "key_value_store"
@@ -175,6 +178,8 @@ func (d *PostgresDatabase) IncrementAddressIndex(chain Chain) (uint32, error) {
 		key = bitcoinAddressIndexKey
 	case ChainEthereum:
 		key = ethereumAddressIndexKey
+	case ChainLitecoin:
+		key = litecoinAddressIndexKey
 	default:
 		return 0, errors.New("Invalid chain")
 	}
@@ -230,6 +235,11 @@ func (d *PostgresDatabase) ResetBlockCounters() error {
 		return errors.Wrap(err, "Error reseting `ethereumLastBlockKey`")
 	}
 
+	_, err = keyValueStore.Update(nil, map[string]interface{}{"key": litecoinLastBlockKey}).Set("value", 0).Exec()
+	if err != nil {
+		return errors.Wrap(err, "Error reseting `litecoinLastBlockKey`")
+	}
+
 	return nil
 }
 
@@ -247,6 +257,14 @@ func (d *PostgresDatabase) GetBitcoinBlockToProcess() (uint64, error) {
 
 func (d *PostgresDatabase) SaveLastProcessedBitcoinBlock(block uint64) error {
 	return d.saveLastProcessedBlock(bitcoinLastBlockKey, block)
+}
+
+func (d *PostgresDatabase) GetLitecoinBlockToProcess() (uint64, error) {
+	return d.getBlockToProcess(litecoinLastBlockKey)
+}
+
+func (d *PostgresDatabase) SaveLastProcessedLitecoinBlock(block uint64) error {
+	return d.saveLastProcessedBlock(litecoinLastBlockKey, block)
 }
 
 func (d *PostgresDatabase) getBlockToProcess(key string) (uint64, error) {

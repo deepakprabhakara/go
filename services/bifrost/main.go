@@ -13,6 +13,8 @@ import (
 	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/facebookgo/inject"
+	ltcChainCfg "github.com/ltcsuite/ltcd/chaincfg"
+	ltcRPCClient "github.com/ltcsuite/ltcd/rpcclient"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/stellar/go/clients/horizon"
@@ -20,6 +22,7 @@ import (
 	"github.com/stellar/go/services/bifrost/config"
 	"github.com/stellar/go/services/bifrost/database"
 	"github.com/stellar/go/services/bifrost/ethereum"
+	"github.com/stellar/go/services/bifrost/litecoin"
 	"github.com/stellar/go/services/bifrost/server"
 	"github.com/stellar/go/services/bifrost/sse"
 	"github.com/stellar/go/services/bifrost/stellar"
@@ -31,7 +34,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "bifrost",
-	Short: "Bridge server to allow participating in Stellar based ICOs using Bitcoin and Ethereum",
+	Short: "Bridge server to allow participating in Stellar based ICOs using Bitcoin, Litecoin and Ethereum",
 }
 
 var serverCmd = &cobra.Command{
@@ -82,6 +85,10 @@ This command will create 3 server.Server's listening on ports 8000-8002.`,
 		ethereumAccounts := make(chan string)
 		ethereumClient := &stress.RandomEthereumClient{}
 		ethereumClient.Start(ethereumAccounts)
+
+		litecoinAccounts := make(chan string)
+		litecoinClient := &stress.RandomLitecoinClient{}
+		litecoinClient.Start(litecoinAccounts)
 
 		db, err := createDatabase(cfg.Database.DSN)
 		if err != nil {
@@ -147,6 +154,8 @@ This command will create 3 server.Server's listening on ports 8000-8002.`,
 				bitcoinAccounts <- account.Address
 			case string(database.ChainEthereum):
 				ethereumAccounts <- account.Address
+			case string(database.ChainLitecoin):
+				litecoinAccounts <- account.Address
 			default:
 				panic("Unknown chain: " + account.Chain)
 			}
@@ -286,6 +295,10 @@ func createServer(cfg config.Config, stressTest bool) *server.Server {
 	ethereumListener := &ethereum.Listener{}
 	ethereumAddressGenerator := &ethereum.AddressGenerator{}
 
+	litecoinClient := &ltcRPCClient.Client{}
+	litecoinListener := &litecoin.Listener{}
+	litecoinAddressGenerator := &litecoin.AddressGenerator{}
+
 	if !stressTest {
 		// Configure real clients
 		if cfg.Bitcoin != nil {
@@ -336,6 +349,37 @@ func createServer(cfg config.Config, stressTest bool) *server.Server {
 				os.Exit(-1)
 			}
 		}
+
+		if cfg.Litecoin != nil {
+			connConfig := &ltcRPCClient.ConnConfig{
+				Host:         cfg.Litecoin.RpcServer,
+				User:         cfg.Litecoin.RpcUser,
+				Pass:         cfg.Litecoin.RpcPass,
+				HTTPPostMode: true,
+				DisableTLS:   true,
+			}
+			litecoinClient, err = ltcRPCClient.New(connConfig, nil)
+			if err != nil {
+				log.WithField("err", err).Error("Error connecting to litecoin-core")
+				os.Exit(-1)
+			}
+
+			litecoinListener.Enabled = true
+			litecoinListener.Testnet = cfg.Litecoin.Testnet
+			server.MinimumValueLtc = cfg.Litecoin.MinimumValueLtc
+
+			var chainParams *ltcChainCfg.Params
+			if cfg.Litecoin.Testnet {
+				chainParams = &ltcChainCfg.TestNet4Params
+			} else {
+				chainParams = &ltcChainCfg.MainNetParams
+			}
+			litecoinAddressGenerator, err = litecoin.NewAddressGenerator(cfg.Litecoin.MasterPublicKey, chainParams)
+			if err != nil {
+				log.Error(err)
+				os.Exit(-1)
+			}
+		}
 	} else {
 		bitcoinListener.Enabled = true
 		bitcoinListener.Testnet = true
@@ -348,6 +392,14 @@ func createServer(cfg config.Config, stressTest bool) *server.Server {
 		ethereumListener.Enabled = true
 		ethereumListener.NetworkID = "3"
 		ethereumAddressGenerator, err = ethereum.NewAddressGenerator(cfg.Ethereum.MasterPublicKey)
+		if err != nil {
+			log.Error(err)
+			os.Exit(-1)
+		}
+
+		litecoinListener.Enabled = true
+		litecoinListener.Testnet = true
+		litecoinAddressGenerator, err = litecoin.NewAddressGenerator(cfg.Litecoin.MasterPublicKey, &ltcChainCfg.TestNet4Params)
 		if err != nil {
 			log.Error(err)
 			os.Exit(-1)
@@ -385,6 +437,9 @@ func createServer(cfg config.Config, stressTest bool) *server.Server {
 		&inject.Object{Value: ethereumAddressGenerator},
 		&inject.Object{Value: ethereumClient},
 		&inject.Object{Value: ethereumListener},
+		&inject.Object{Value: litecoinAddressGenerator},
+		&inject.Object{Value: litecoinClient},
+		&inject.Object{Value: litecoinListener},
 		&inject.Object{Value: horizonClient},
 		&inject.Object{Value: server},
 		&inject.Object{Value: sseServer},
