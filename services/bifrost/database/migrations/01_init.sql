@@ -1,4 +1,4 @@
-CREATE TYPE chain AS ENUM ('bitcoin', 'ethereum');
+CREATE TYPE chain AS ENUM ('bitcoin', 'ethereum', 'litecoin');
 
 CREATE TABLE address_association (
   chain chain NOT NULL,

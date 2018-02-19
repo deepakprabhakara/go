@@ -5,6 +5,7 @@ type AssetCode string
 const (
 	AssetCodeBTC AssetCode = "BTC"
 	AssetCodeETH AssetCode = "ETH"
+	AssetCodeLTC AssetCode = "LTC"
 )
 
 type Transaction struct {

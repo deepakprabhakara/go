@@ -32,6 +32,7 @@ func (s *Server) Start() error {
 	// Register callbacks
 	s.BitcoinListener.TransactionHandler = s.onNewBitcoinTransaction
 	s.EthereumListener.TransactionHandler = s.onNewEthereumTransaction
+	s.LitecoinListener.TransactionHandler = s.onNewLitecoinTransaction
 	s.StellarAccountConfigurator.OnAccountCreated = s.onStellarAccountCreated
 	s.StellarAccountConfigurator.OnAccountCredited = s.onStellarAccountCredited
 
