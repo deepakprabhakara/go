@@ -155,6 +155,8 @@ func (s *Server) HandlerEvents(w http.ResponseWriter, r *http.Request) {
 	// Create SSE stream if not exists but only if address exists.
 	// This is required to restart a stream after server restart or failure.
 	address := r.URL.Query().Get("stream")
+	reqChain := r.URL.Query().Get("chain")
+
 	if !s.SSEServer.StreamExists(address) {
 		var chain database.Chain
 
@@ -163,12 +165,15 @@ func (s *Server) HandlerEvents(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if address[0] == '0' {
-			chain = database.ChainEthereum
-		} else {
-			// 1 or m, n in testnet
-			// TODO: Litecoin?
-			chain = database.ChainBitcoin
+		if reqChain == "" {
+			if address[0] == '0' {
+				chain = database.ChainEthereum
+			} else {
+				// 1 or m, n in testnet
+				chain = database.ChainBitcoin
+			}
+		} else { // LTC support
+			chain = database.Chain(reqChain)
 		}
 
 		association, err := s.Database.GetAssociationByChainAddress(chain, address)
