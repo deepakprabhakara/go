@@ -235,6 +235,11 @@ func (d *PostgresDatabase) ResetBlockCounters() error {
 		return errors.Wrap(err, "Error reseting `ethereumLastBlockKey`")
 	}
 
+	_, err = keyValueStore.Update(nil, map[string]interface{}{"key": litecoinLastBlockKey}).Set("value", 0).Exec()
+	if err != nil {
+		return errors.Wrap(err, "Error reseting `litecoinLastBlockKey`")
+	}
+
 	return nil
 }
 

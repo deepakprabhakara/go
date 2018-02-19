@@ -3,47 +3,47 @@ package litecoin
 import (
 	"testing"
 
-	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/ltcsuite/ltcd/chaincfg"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddressGenerator(t *testing.T) {
 	// Generated using https://iancoleman.github.io/bip39/
 	// Root key:
-	// xprv9s21ZrQH143K2Cfj4mDZBcEecBmJmawReGwwoAou2zZzG45bM6cFPJSvobVTCB55L6Ld2y8RzC61CpvadeAnhws3CHsMFhNjozBKGNgucYm
-	// Derivation Path m/44'/0'/0'/0:
-	// xprvA1y8DJefYknMwXkdUrSk57z26Z3Fjr3rVpk8NzQKRQWjy3ogV43qr4eqTuF1rg5rrw28mqbDHfWsmoBbeDPcQ34teNgDyohSu6oyodoJ6Bu
-	// xpub6ExUcpBZP8LfA1q6asykSFvkeask9Jmhs3fjBNovyk3iqr8q2bN6PryKKCvLLkMs1u2667wJnoM5LRQc3JcsGbQAhjUqJavxhtdk363GbP2
-	generator, err := NewAddressGenerator("xpub6ExUcpBZP8LfA1q6asykSFvkeask9Jmhs3fjBNovyk3iqr8q2bN6PryKKCvLLkMs1u2667wJnoM5LRQc3JcsGbQAhjUqJavxhtdk363GbP2", &chaincfg.MainNetParams)
+	// Ltpv71G8qDifUiNesHWSni4KA4G3kZBRBX9nwuqhw8Jt6ukdUwuYxsQcLbgKrWTE2FhmFGKeJgytys579WDexNEWTEVToNeHiKQV3PyeF69yiui
+	// Derivation Path m/44'/2'/0'/0:
+	// Ltpv78suy1WqwyejGuFfTkcm1emtsbHu69ksFKNuE5sHXyBJzTCARd8jH4Q7jqT8ozRv7oFEG53wruiZjeDQZpLbVMnyVx5cgdc3LnNfJ85RdfF
+	// Ltub2a4FZnwPC8BgtmxViN796Ec7K9z6AQKXKqUvu4daU9xuapPEkYBAHfWNzEwpFjd2sHwX9kCFPxyMuWTHHiizViuaa27t85DP5ezobRwbYPm
+	generator, err := NewAddressGenerator("Ltub2a4FZnwPC8BgtmxViN796Ec7K9z6AQKXKqUvu4daU9xuapPEkYBAHfWNzEwpFjd2sHwX9kCFPxyMuWTHHiizViuaa27t85DP5ezobRwbYPm", &chaincfg.MainNetParams)
 	assert.NoError(t, err)
 
 	expectedChildren := []struct {
 		index   uint32
 		address string
 	}{
-		{0, "1Q74qRud8bXUn6FMtXWZwJa5pj56s3mdyf"},
-		{1, "1CSauQLNjb3RVQN34bDZAnmKuHScsP3xuC"},
-		{2, "17HCcV6BseYXaZaBXAPZqtCGQTJB9ZKsYS"},
-		{3, "1MLEi1UXggrJP9ArUbxNPE9N6JUMnXErxb"},
-		{4, "1cwGtdn8kqGakhXji1qDAnFjp58zN5qTn"},
-		{5, "13X3CERUszAkQ2YG8yJ3eDQ8w2ATosRJWk"},
-		{6, "16sgaW7RPaebPNB1umpNMxiJLjhRnNsJWY"},
-		{7, "1D8xepkjsM6hfA56E1j3NWP2zcyrTMsrQM"},
-		{8, "1DAEFQpKEqchA7caGKQBRacexcGJWvjXfP"},
-		{9, "1N3nPpuLiZtDxuM9F3qtbTNJun3kSwC83C"},
+		{0, "Lhd98J63jWM44tY8tcGPcvCdRDruDadyJj"},
+		{1, "LMy56RybHawcF2NKX9d2jnfuWd42Hn1AyX"},
+		{2, "LU4ueCvSALxpDV35VFeY6XSwYrtTmrNC1S"},
+		{3, "Led8FBxx4kMTUgsgcXQymafHiraoApXVmq"},
+		{4, "LhNH4gjdyEXhNyah22FDwvaAeJwfxd7kng"},
+		{5, "Lbe14PXkYNHhFLm6Npsu3oZboM6xDtjJv7"},
+		{6, "LTgHff4zjZBoLcnPASc4mRW7ZureNzA2qM"},
+		{7, "LeuBMeguAXEzDfqyxqR9pJnRUKaXmPdsRz"},
+		{8, "LgyqCpKJQLvgLmXpSu918gniWyFHPoYgZ2"},
+		{9, "LdPgyKjqzkNv8hRfkjSmNG1zbhUUogbBL9"},
 
-		{100, "14C4sYrxXMCN17gUK2BMjuHSgmsp4X1oYu"},
-		{101, "1G8unQbMMSrGh9SHwyUCVVGu5NTjAEPRYY"},
-		{102, "1HeyVCFJr95VGJwJAuUSfBenCwk1jSjjsQ"},
-		{103, "18hSmMYJ43AHrE1x5Q9gHjaEMJmbwaUQQo"},
-		{104, "18sVLpqDyz4dfmBy6bwNw9yYJme8ybQxeh"},
-		{105, "1EjPpuUU2Mh2vgmQgdmQvF6TqkR3YJEypn"},
-		{106, "17zJ3LxbZFVpNANXeJfHvCGSsytfMYMeVh"},
-		{107, "1555pj7ZWw2Qmv7chn1ziJgDYkaauw9BLD"},
-		{108, "1KUaZb5Znqu8XF7AV7phhGDuVPvosJeoa"},
-		{109, "144w7WJhkpm9M9k9xYxQdmyNxgPiY33L6v"},
+		{100, "LNCv2h63oJf4qqgXnV4DiSJT5oWiKZMpV4"},
+		{101, "LemDH6aWCFEewFeGYGYqRXF2KcpnEeUZAy"},
+		{102, "LRQ4k126ZLTLBJ15Y1qEBzfdSa1uhRP6eS"},
+		{103, "LQARQJFAG1zTEEovMmkdr4z8sG3w5TdyAA"},
+		{104, "LdBkBT2PX4dmP1KfUVcKd2ypZLT7q8FRwU"},
+		{105, "LhwWaQsC8ygGUsUr7tjADN8ywTqj7gwnFh"},
+		{106, "LazYfFBTwbipsrMRY4xht49QwjzevF7Qz2"},
+		{107, "Lh39GmoawktnPSFjd4ruUQzK154vDuFUXE"},
+		{108, "LWm6UqQnXzgTKX3heA6A5k4fxSBc1SaG7T"},
+		{109, "LKbGGCt4VS7hiCkCasYQAcCZB7Tzrq2LeY"},
 
-		{1000, "1JGxd9xgBpYp4z7XHS9ezonfUTEuSoQv7y"},
+		{1000, "LTwWRfBS2jUbf1VBR5kdVaxPgdYdMLzfNN"},
 	}
 
 	for _, child := range expectedChildren {

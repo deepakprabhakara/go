@@ -5,6 +5,7 @@ CREATE TABLE address_association (
   address_index bigint NOT NULL,
   /* bitcoin 34 characters */
   /* ethereum 42 characters */
+  /* litecoin 34 characters */
   address varchar(42) NOT NULL UNIQUE,
   stellar_public_key varchar(56) NOT NULL UNIQUE,
   created_at timestamp NOT NULL,
@@ -23,6 +24,9 @@ INSERT INTO key_value_store (key, value) VALUES ('ethereum_last_block', '0');
 
 INSERT INTO key_value_store (key, value) VALUES ('bitcoin_address_index', '0');
 INSERT INTO key_value_store (key, value) VALUES ('bitcoin_last_block', '0');
+
+INSERT INTO key_value_store (key, value) VALUES ('litecoin_address_index', '0');
+INSERT INTO key_value_store (key, value) VALUES ('litecoin_last_block', '0');
 
 CREATE TABLE processed_transaction (
   chain chain NOT NULL,
@@ -44,6 +48,7 @@ CREATE TABLE transactions_queue (
   /* Amount in the base unit of currency (BTC or ETH). */
   /* ethereum: 100000000 in year 2128 + 7 decimal precision in Stellar + dot */
   /* bitcoin:   21000000              + 7 decimal precision in Stellar + dot */
+  /* litecoin:   21000000              + 7 decimal precision in Stellar + dot */
   amount varchar(20) NOT NULL,
   stellar_public_key varchar(56) NOT NULL,
   pooled boolean NOT NULL DEFAULT false,

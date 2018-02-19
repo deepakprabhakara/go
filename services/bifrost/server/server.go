@@ -18,6 +18,7 @@ import (
 	"github.com/stellar/go/services/bifrost/common"
 	"github.com/stellar/go/services/bifrost/database"
 	"github.com/stellar/go/services/bifrost/ethereum"
+	"github.com/stellar/go/services/bifrost/litecoin"
 	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/support/http/server"
 	"github.com/stellar/go/support/log"
@@ -34,8 +35,8 @@ func (s *Server) Start() error {
 	s.StellarAccountConfigurator.OnAccountCreated = s.onStellarAccountCreated
 	s.StellarAccountConfigurator.OnAccountCredited = s.onStellarAccountCredited
 
-	if !s.BitcoinListener.Enabled && !s.EthereumListener.Enabled {
-		return errors.New("At least one listener (BitcoinListener or EthereumListener) must be enabled")
+	if !s.BitcoinListener.Enabled && !s.EthereumListener.Enabled && !s.LitecoinListener.Enabled {
+		return errors.New("At least one listener (BitcoinListener or EthereumListener or LitecoinListener) must be enabled")
 	}
 
 	if s.BitcoinListener.Enabled {
@@ -74,6 +75,25 @@ func (s *Server) Start() error {
 		}
 	} else {
 		s.log.Warn("EthereumListener disabled")
+	}
+
+	if s.LitecoinListener.Enabled {
+		var err error
+		s.minimumValueLit, err = litecoin.LtcToLit(s.MinimumValueLtc)
+		if err != nil {
+			return errors.Wrap(err, "Invalid minimum accepted Litecoin transaction value: "+s.MinimumValueLtc)
+		}
+
+		if s.minimumValueLit == 0 {
+			return errors.New("Minimum accepted Litecoin transaction value must be larger than 0")
+		}
+
+		err = s.LitecoinListener.Start()
+		if err != nil {
+			return errors.Wrap(err, "Error starting LitecoinListener")
+		}
+	} else {
+		s.log.Warn("LitecoinListener disabled")
 	}
 
 	err := s.StellarAccountConfigurator.Start()
@@ -122,6 +142,7 @@ func (s *Server) startHTTPServer() {
 	muxConfig.Route(http.MethodGet, "/events", s.HandlerEvents)
 	muxConfig.Route(http.MethodPost, "/generate-bitcoin-address", s.HandlerGenerateBitcoinAddress)
 	muxConfig.Route(http.MethodPost, "/generate-ethereum-address", s.HandlerGenerateEthereumAddress)
+	muxConfig.Route(http.MethodPost, "/generate-litecoin-address", s.HandlerGenerateLitecoinAddress)
 	muxConfig.Route(http.MethodPost, "/recovery-transaction", s.HandlerRecoveryTransaction)
 
 	r := server.NewRouter(muxConfig)
@@ -145,6 +166,7 @@ func (s *Server) HandlerEvents(w http.ResponseWriter, r *http.Request) {
 			chain = database.ChainEthereum
 		} else {
 			// 1 or m, n in testnet
+			// TODO: Litecoin?
 			chain = database.ChainBitcoin
 		}
 
@@ -169,6 +191,10 @@ func (s *Server) HandlerGenerateBitcoinAddress(w http.ResponseWriter, r *http.Re
 
 func (s *Server) HandlerGenerateEthereumAddress(w http.ResponseWriter, r *http.Request) {
 	s.handlerGenerateAddress(w, r, database.ChainEthereum)
+}
+
+func (s *Server) HandlerGenerateLitecoinAddress(w http.ResponseWriter, r *http.Request) {
+	s.handlerGenerateAddress(w, r, database.ChainLitecoin)
 }
 
 func (s *Server) handlerGenerateAddress(w http.ResponseWriter, r *http.Request, chain database.Chain) {
@@ -196,6 +222,8 @@ func (s *Server) handlerGenerateAddress(w http.ResponseWriter, r *http.Request, 
 		address, err = s.BitcoinAddressGenerator.Generate(index)
 	case database.ChainEthereum:
 		address, err = s.EthereumAddressGenerator.Generate(index)
+	case database.ChainLitecoin:
+		address, err = s.LitecoinAddressGenerator.Generate(index)
 	default:
 		log.WithField("chain", chain).Error("Invalid chain")
 		w.WriteHeader(http.StatusInternalServerError)

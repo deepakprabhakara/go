@@ -3,9 +3,9 @@ package litecoin
 import (
 	"math/big"
 
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/ltcsuite/ltcd/chaincfg"
+	"github.com/ltcsuite/ltcd/chaincfg/chainhash"
+	"github.com/ltcsuite/ltcd/wire"
 	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/support/log"
 	"github.com/tyler-smith/go-bip32"

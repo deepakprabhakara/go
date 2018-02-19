@@ -1,5 +1,5 @@
-hash: 7eac67607acc35ee775cfd4301d326fa205f7d0e95836f36dd934c5ccd9fc171
-updated: 2017-12-22T11:51:26.139292-09:00
+hash: cbf6c8a15c59d9effd61c23c12f89f5ae64b8a9f5d0fec42cbe49e3b052385d4
+updated: 2018-02-18T23:41:26.078385Z
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -43,6 +43,8 @@ imports:
   - private/waiter
   - service/s3
   - service/sts
+- name: github.com/bartekn/go-bip39
+  version: a05967ea095d81c8fe4833776774cfaff8e5036c
 - name: github.com/btcsuite/btcd
   version: 4803a8291c92a1d2d41041b942a9a9e37deab065
   subpackages:
@@ -64,6 +66,10 @@ imports:
   version: 4720035b7bfd2a9bb130b1c184f8bbe41b6f0d0f
   subpackages:
   - socks
+- name: github.com/btcsuite/golangcrypto
+  version: 53f62d9b43e87a6c56975cf862af7edf33a8d0df
+  subpackages:
+  - ripemd160
 - name: github.com/btcsuite/websocket
   version: 31079b6807923eb23992c421b114992b95131b55
 - name: github.com/BurntSushi/toml
@@ -201,6 +207,21 @@ imports:
   repo: https://github.com/lib/pq
   subpackages:
   - oid
+- name: github.com/ltcsuite/ltcd
+  version: 92a0feb9b86f5971655013115ea4f95949403592
+  subpackages:
+  - btcec
+  - btcjson
+  - chaincfg
+  - chaincfg/chainhash
+  - rpcclient
+  - txscript
+  - wire
+- name: github.com/ltcsuite/ltcutil
+  version: a88d7dfb1c02af5dffe005ad21f40c42d9fd5ad0
+  subpackages:
+  - base58
+  - bech32
 - name: github.com/magiconair/properties
   version: 359442d561ca28acd0fe503aa9f075f505bc9ed0
   repo: https://github.com/magiconair/properties
@@ -231,7 +252,7 @@ imports:
   subpackages:
   - xdr3
 - name: github.com/onsi/ginkgo
-  version: 6c46eb8334b30dc55b42f1a1c725d5ce97375390
+  version: 9008c7b79f9636c46a0a945141020124702f0ecf
   subpackages:
   - config
   - extensions/table
@@ -252,7 +273,7 @@ imports:
   - reporters/stenographer/support/go-isatty
   - types
 - name: github.com/onsi/gomega
-  version: d35dcfdbfd01eaabf8da0b6b36f111ff953b68cb
+  version: fcebc62b30a95351cb5e56d8a97b6e67cbb85353
   subpackages:
   - format
   - internal/assertion
@@ -349,8 +370,6 @@ imports:
   - suite
 - name: github.com/tyler-smith/go-bip32
   version: 2c9cfd17756470a0b7c3e4b7954bae7d11035504
-- name: github.com/bartekn/go-bip39
-  version: a05967ea095d81c8fe4833776774cfaff8e5036c
 - name: github.com/tylerb/graceful
   version: 7116c7a8115899e80197cd9e0b97998c0f97ed8e
   repo: https://github.com/tylerb/graceful
@@ -407,6 +426,7 @@ imports:
   subpackages:
   - pbkdf2
   - ripemd160
+  - scrypt
   - ssh/terminal
 - name: golang.org/x/net
   version: 9bc2a3340c92c17a20edcd0080e93851ed58f5d5

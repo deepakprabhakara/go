@@ -1,8 +1,8 @@
 package litecoin
 
 import (
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcutil"
+	"github.com/ltcsuite/ltcd/chaincfg"
+	"github.com/ltcsuite/ltcutil"
 	"github.com/stellar/go/support/errors"
 	"github.com/tyler-smith/go-bip32"
 )
@@ -30,7 +30,7 @@ func (g *AddressGenerator) Generate(index uint32) (string, error) {
 		return "", errors.Wrap(err, "Error creating new child key")
 	}
 
-	address, err := btcutil.NewAddressPubKey(accountKey.Key, g.chainParams)
+	address, err := ltcutil.NewAddressPubKey(accountKey.Key, g.chainParams)
 	if err != nil {
 		return "", errors.Wrap(err, "Error creating address for new child key")
 	}

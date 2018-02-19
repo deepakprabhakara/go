@@ -26,13 +26,13 @@ const (
 )
 
 type Database interface {
-	// CreateAddressAssociation creates Bitcoin/Ethereum-Stellar association. `addressIndex`
-	// is the chain (Bitcoin/Ethereum) address derivation index (BIP-32).
+	// CreateAddressAssociation creates Bitcoin/Ethereum/Litecoin-Stellar association. `addressIndex`
+	// is the chain (Bitcoin/Ethereum/Litecoin) address derivation index (BIP-32).
 	CreateAddressAssociation(chain Chain, stellarAddress, address string, addressIndex uint32) error
-	// GetAssociationByChainAddress searches for previously saved Bitcoin/Ethereum-Stellar association.
+	// GetAssociationByChainAddress searches for previously saved Bitcoin/Ethereum/Litecoin-Stellar association.
 	// Should return nil if not found.
 	GetAssociationByChainAddress(chain Chain, address string) (*AddressAssociation, error)
-	// GetAssociationByStellarPublicKey searches for previously saved Bitcoin/Ethereum-Stellar association.
+	// GetAssociationByStellarPublicKey searches for previously saved Bitcoin/Ethereum/Litecoin-Stellar association.
 	// Should return nil if not found.
 	GetAssociationByStellarPublicKey(stellarPublicKey string) (*AddressAssociation, error)
 	// AddProcessedTransaction adds a transaction to database as processed. This
@@ -43,7 +43,7 @@ type Database interface {
 	// should never return the same value more than once.
 	IncrementAddressIndex(chain Chain) (uint32, error)
 
-	// ResetBlockCounters changes last processed bitcoin and ethereum block to default value.
+	// ResetBlockCounters changes last processed bitcoin, ethereum and litecoin block to default value.
 	// Used in stress tests.
 	ResetBlockCounters() error
 

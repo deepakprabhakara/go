@@ -8,6 +8,7 @@ import (
 	"github.com/stellar/go/services/bifrost/config"
 	"github.com/stellar/go/services/bifrost/database"
 	"github.com/stellar/go/services/bifrost/ethereum"
+	"github.com/stellar/go/services/bifrost/litecoin"
 	"github.com/stellar/go/services/bifrost/queue"
 	"github.com/stellar/go/services/bifrost/sse"
 	"github.com/stellar/go/services/bifrost/stellar"
@@ -25,15 +26,19 @@ type Server struct {
 	Database                   database.Database            `inject:""`
 	EthereumListener           *ethereum.Listener           `inject:""`
 	EthereumAddressGenerator   *ethereum.AddressGenerator   `inject:""`
+	LitecoinListener           *litecoin.Listener           `inject:""`
+	LitecoinAddressGenerator   *litecoin.AddressGenerator   `inject:""`
 	StellarAccountConfigurator *stellar.AccountConfigurator `inject:""`
 	TransactionsQueue          queue.Queue                  `inject:""`
 	SSEServer                  sse.ServerInterface          `inject:""`
 
 	MinimumValueBtc string
 	MinimumValueEth string
+	MinimumValueLtc string
 
 	minimumValueSat int64
 	minimumValueWei *big.Int
+	minimumValueLit int64
 	httpServer      *http.Server
 	log             *log.Entry
 }

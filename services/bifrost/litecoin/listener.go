@@ -4,17 +4,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/ltcsuite/ltcd/chaincfg"
+	"github.com/ltcsuite/ltcd/txscript"
+	"github.com/ltcsuite/ltcd/wire"
 	"github.com/stellar/go/services/bifrost/common"
 	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/support/log"
 )
 
 func (l *Listener) Start() error {
-	l.log = common.CreateLogger("BitcoinListener")
-	l.log.Info("BitcoinListener starting")
+	l.log = common.CreateLogger("LitecoinListener")
+	l.log.Info("LitecoinListener starting")
 
 	genesisBlockHash, err := l.Client.GetBlockHash(0)
 	if err != nil {
@@ -22,7 +22,7 @@ func (l *Listener) Start() error {
 	}
 
 	if l.Testnet {
-		l.chainParams = &chaincfg.TestNet3Params
+		l.chainParams = &chaincfg.TestNet4Params
 	} else {
 		l.chainParams = &chaincfg.MainNetParams
 	}
@@ -33,7 +33,7 @@ func (l *Listener) Start() error {
 
 	blockNumber, err := l.Storage.GetLitecoinBlockToProcess()
 	if err != nil {
-		err = errors.Wrap(err, "Error getting bitcoin block to process from DB")
+		err = errors.Wrap(err, "Error getting litecoin block to process from DB")
 		l.log.Error(err)
 		return err
 	}
@@ -41,7 +41,7 @@ func (l *Listener) Start() error {
 	if blockNumber == 0 {
 		blockNumberTmp, err := l.Client.GetBlockCount()
 		if err != nil {
-			err = errors.Wrap(err, "Error getting the block count from bitcoin-core")
+			err = errors.Wrap(err, "Error getting the block count from litecoin-core")
 			l.log.Error(err)
 			return err
 		}
@@ -112,14 +112,14 @@ func (l *Listener) getBlock(blockNumber uint64) (*wire.MsgBlock, error) {
 			// Block does not exist yet
 			return nil, nil
 		}
-		err = errors.Wrap(err, "Error getting block hash from bitcoin-core")
+		err = errors.Wrap(err, "Error getting block hash from litecoin-core")
 		l.log.WithField("blockHeight", blockHeight).Error(err)
 		return nil, err
 	}
 
 	block, err := l.Client.GetBlock(blockHash)
 	if err != nil {
-		err = errors.Wrap(err, "Error getting block from bitcoin-core")
+		err = errors.Wrap(err, "Error getting block from litecoin-core")
 		l.log.WithField("blockHash", blockHash.String()).Error(err)
 		return nil, err
 	}
